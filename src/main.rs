@@ -29,10 +29,16 @@ fn repl() {
         stdin.read_line(&mut source).unwrap();
 
         let span_tokens = dango_parser::span_tokenizer::tokenize_into_spans(source.as_str());
-        println!("{:?}", span_tokens);
-
         let tokens = dango_parser::tokenizer::tokenize(span_tokens);
-        println!("{:?}", tokens);
+
+        let mut runtime = Runtime::new();
+
+        dango_runtime::stdlib::load_io(&mut runtime);
+        dango_runtime::stdlib::load_math(&mut runtime);
+
+        runtime.run(dango_parser::parser::parse(tokens));
+
+        println!();
 
         source.clear();
     }
@@ -65,14 +71,5 @@ fn main() {
     dango_runtime::stdlib::load_io(&mut runtime);
     dango_runtime::stdlib::load_math(&mut runtime);
 
-    let mut program = Program::new();
-
-    // eat (2.0)(:math-sqrt)----
-    // program.add_line(vec![
-    //     Instruction::Dumpling(Dumpling::Float(2.0)),
-    //     Instruction::Dumpling(Dumpling::FnCall("math-sqrt".to_string())),
-    //     Instruction::Other(Operation::Eat(Eat::StackTop)),
-    // ]);
-
-    // runtime.run(program);
+    runtime.run(dango_parser::parser::parse(tokens));
 }

@@ -13,6 +13,9 @@ dependencies = [
 [[package]]
 name = "dango_parser"
 version = "0.1.0"
+dependencies = [
+ "dango_runtime",
+]
 
 [[package]]
 name = "dango_runtime"

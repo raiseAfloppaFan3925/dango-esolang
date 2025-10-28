@@ -79,7 +79,12 @@ impl<'a> Tokenizer<'a> {
             return Token::FunctionCall(trimmed.to_string());
         }
 
-        if current.text == "j" { return Token::Jump; }
+        match current.text {
+            "" => return Token::Null,
+            "j" => return Token::Jump,
+            "'" => return Token::Stringify,
+            _ => (),
+        }
 
         if let Ok(as_int) = current.text.parse::<i64>() {
             return Token::Int(as_int);

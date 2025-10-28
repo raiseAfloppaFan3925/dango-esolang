@@ -114,6 +114,7 @@ pub(crate) fn runtime_interpret_other(operation: &Operation, line: &mut usize, i
             Eat::StackTop => stack.pop().unwrap(),
             _ => todo!(),
         }),
+        _ => todo!(),
     }
     *index += 1;
 }

@@ -7,10 +7,9 @@
 /// ```
 #[derive(Debug)]
 pub enum Dumpling {
-    FnCall {                      // (0)(:get-args)
-        name: String,
-        argc: i64,
-    },
+    Float(f64),                   // (0.401)
+    FnCall(String),               // (:get-args)
+    Int(i64),                     // (39)
     Jump,                         // (420)(j)
     Left,                         // (%left)
     Null,                         // ()
@@ -21,7 +20,6 @@ pub enum Dumpling {
 
 #[derive(Debug)]
 pub enum Eat {
-    Dumpling(Dumpling),           // eat (Hello, world!)(')----
     Index(usize),                 // eat 39
     StackTop,                     // eat
 }

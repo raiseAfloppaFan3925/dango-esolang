@@ -3,13 +3,29 @@ use std::io::Write;
 
 use dango_runtime::{instructions::*, runtime::Runtime, Value};
 
+static REPL_STRING: &str = "
+ _|_
+/@@@\\
+\\@@@/  | Dango 0.1.0
+/%%%\\  |
+\\%%%/  | Stuff
+/***\\  | Stuff
+\\***/  | Stuff
+  |
+  |
+";
+
+fn repl() {
+    println!("{}", REPL_STRING);
+
+    todo!("REPL will be implemented after the parser is made");
+}
+
 fn main() {
     let args = std::env::args().collect::<Vec<String>>();
 
     if args.len() < 2 {
-        let mut stderr = std::io::stderr().lock();
-        let _ = writeln!(stderr, "Usage: dango [file.dango]");
-        std::process::exit(1);
+        repl();
     }
 
     let path = args.get(1).unwrap();
@@ -23,26 +39,18 @@ fn main() {
         let _ = writeln!(stderr, "Error: file contains invalid Unicode");
         std::process::exit(1);
     };
-    
-    println!("{}", source);
 
-    let mut runtime = Runtime::new(1024);
+    let mut runtime = Runtime::new();
 
-    runtime.register_function("square".to_string(), |rt| {
-        match rt.pop_stack() {
-            Value::Int(val) => Value::Int(val * val),
-            Value::Float(val) => Value::Float(val * val),
-            _ => Value::Nil,
-        }
-    });
+    dango_runtime::stdlib::load_io(&mut runtime);
+    dango_runtime::stdlib::load_math(&mut runtime);
 
     let mut program = Program::new();
 
-    // eat (Hello, world!)(')----
-    // this implies that programs are parsed in reverse LOL
+    // eat (2.0)(:math-sqrt)----
     program.add_line(vec![
-        Instruction::Dumpling(Dumpling::Text("Hello, world!".to_string())),
-        Instruction::Dumpling(Dumpling::Stringify),
+        Instruction::Dumpling(Dumpling::Float(2.0)),
+        Instruction::Dumpling(Dumpling::FnCall("math-sqrt".to_string())),
         Instruction::Other(Operation::Eat(Eat::StackTop)),
     ]);
 

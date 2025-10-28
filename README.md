@@ -11,7 +11,7 @@ eat (Hello, world!)(')----
 
 ## Why Dango?
 
-* **Written in [Rust](https://rust-lang.org)**: You can trust Dango to NOT segfault, unlike early versions of Ammolite that never saw the light of day.
+* **Written in [Rust](https://rust-lang.org)**: You can trust Dango to NOT crash at runtime. (does not guarantee zero panics)
 
 * **Performance**: Dango is simple and lightweight yet fast. If you dare, you can even embed Dango into your Rust projects.
 

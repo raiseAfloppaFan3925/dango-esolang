@@ -1,159 +1,105 @@
+//! The second pass of tokenization, which tokenizes the spans from the span tokenizer stage.
 
-use std::str::Chars;
+use super::span_tokenizer::{SpanToken, SpanKind};
 
-#[derive(Debug, PartialEq)]
-pub enum TokenKind {
-    Dumpling,               // (Hello, world!)
-    NonDumpling,            // eat
-    Stick,                  // ----
-    Eof,
-}
-
-/// I'm calling it a token for a lack of a better word ("Span" exists but what would the tokenizer be named?)
-/// This thing just stores the span so that the actual tokenizer knows what to do.
 #[derive(Debug)]
-pub struct Token<'a> {
-    pub kind: TokenKind,
-    pub text: &'a str,
+pub enum Token {
+    // Dumplings
+    Float(f64),                 // 39.040141421
+    FunctionCall(String),       // (:math-pi)
+    Int(i64),                   // (12345)
+    Jump,                       // (j)
+    Null,                       // ()
+    RawText(String),            // (Hello, world!)
+    Stringify,                  // (')
+    StringifyRawUtf32,          // ('b)
+
+    // Misc
+    Eat,                        // eat
+
+    // More misc
+    Stick,                      // ----
 }
 
-impl<'a> Token<'a> {
-    pub fn new(kind: TokenKind, text: &'a str) -> Self {
-        Self { kind, text }
-    }
-}
-
-pub fn tokenize(source: &str) -> Vec<Token<'_>> {
+pub fn tokenize(span_tokens: Vec<SpanToken<'_>>) -> Vec<Token> {
     let mut tokenizer = Tokenizer {
-        source: source,
-        chars: source.chars(),
-        start: 0,
-        current: 0,
+        span_tokens,
+        index: 0,
     };
 
     std::iter::from_fn(|| {
-        let span = tokenizer.consume_span();
-        if span.kind == TokenKind::Eof {
-            None
-        } else {
-            Some(span)
-        }
+        tokenizer.tokenize_span()
     }).collect()
 }
 
 pub struct Tokenizer<'a> {
-    source: &'a str,
-    chars: Chars<'a>,
-
-    start: usize,
-    current: usize,
+    span_tokens: Vec<SpanToken<'a>>,
+    index: usize,
 }
 
 impl<'a> Tokenizer<'a> {
-    pub fn consume_span(&mut self) -> Token<'a> {
-        self.skip_whitespace();
-        self.start = self.current;
+    pub fn tokenize_span(&mut self) -> Option<Token> {
+        let tok = match self.current() {
+            Some(span) => match span.kind {
+                SpanKind::Dumpling => Some(self.tokenize_dumpling()),
+                SpanKind::NonDumpling => Some(self.tokenize_operation()),
+                SpanKind::Stick => Some(Token::Stick),
+                SpanKind::Eof => None,
+                _ => todo!(),
+            },
+            None => None,
+        };
+        self.index += 1;
+        tok
+    }
 
-        match self.first() {
-            Some(c) => match c {
-                '(' => self.consume_dumpling(),
-                '-' => self.consume_stick(),
-                _ => self.consume_misc(),
-            }
-            None => Token::new(TokenKind::Eof, ""),
-        }
+    fn current(&self) -> Option<&SpanToken<'a>> {
+        self.span_tokens.get(self.index)
     }
 
     fn first(&self) -> Option<char> {
-        self.chars.clone().next()
+        self.current().unwrap().text.chars().next()
     }
 
     fn second(&self) -> Option<char> {
-        let mut iter = self.chars.clone();
+        let mut iter = self.current().unwrap().text.chars();
         iter.next();
         iter.next()
     }
 
-    fn third(&self) -> Option<char> {
-        let mut iter = self.chars.clone();
-        iter.next();
-        iter.next();
-        iter.next()
-    }
+    fn tokenize_dumpling(&mut self) -> Token {
+        let Some(current) = self.current() else {
+            panic!();
+        };
 
-    fn fourth(&self) -> Option<char> {
-        let mut iter = self.chars.clone();
-        iter.next();
-        iter.next();
-        iter.next();
-        iter.next()
-    }
+        if current.text.len() == 0 { return Token::Null; }
 
-    fn matches_string(&self, string: &str) -> bool {
-        let mut iter = self.chars.clone();
-        let mut iter_str = string.chars();
-        for i in 0..string.len() {
-            if iter.next() != iter_str.next() { return false; }
+        if current.text.chars().next().unwrap() == ':' {
+            let trimmed = &current.text[1..];
+            return Token::FunctionCall(trimmed.to_string());
         }
 
-        true
-    }
+        if current.text == "j" { return Token::Jump; }
 
-    fn advance(&mut self) -> Option<char> {
-        if self.current > self.source.len() {
-            return None;
+        if let Ok(as_int) = current.text.parse::<i64>() {
+            return Token::Int(as_int);
         }
 
-        let c = self.chars.next();
-        self.current += 1;
-        c
-    }
-
-    fn skip_whitespace(&mut self) {
-        while let Some(c) = self.first() {
-            if !c.is_whitespace() { break; }
-            self.advance();
-        }
-    }
-
-    // AAA WHY IS THIS SUCH A FUNNY NAME FOR A FUNCTION
-    fn consume_dumpling(&mut self) -> Token<'a> {
-        while let Some(c) = self.first() {
-            if c == '\n' {
-                panic!("Dumplings cannot span multiple lines");
-            }
-            if c == ')' { break; }
-
-            self.advance();
+        if let Ok(as_float) = current.text.parse::<f64>() {
+            return Token::Float(as_float);
         }
 
-        self.advance();
-
-        Token::new(TokenKind::Dumpling, &self.source[self.start + 1..self.current - 1])
+        Token::RawText(current.text.to_string())
     }
 
-    fn consume_stick(&mut self) -> Token<'a> {
-        if !self.matches_string("----") {
-            panic!("Invalid token");
+    fn tokenize_operation(&mut self) -> Token {
+        let Some(current) = self.current() else {
+            panic!();
+        };
+
+        match current.text {
+            "eat" => Token::Eat,
+            _ => todo!(),
         }
-        self.advance();
-        self.advance();
-        self.advance();
-        self.advance();
-        Token::new(TokenKind::Stick, &self.source[self.start..self.current])
-    }
-
-    fn consume_misc(&mut self) -> Token<'a> {
-        while let Some(c) = self.first() {
-            match c {
-                '(' | '-' => break,
-                _ => (),
-            }
-            if c.is_whitespace() { break; }
-
-            self.advance();
-        }
-
-        Token::new(TokenKind::NonDumpling, &self.source[self.start..self.current])
     }
 }

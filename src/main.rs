@@ -1,5 +1,5 @@
 
-use std::io::Write;
+use std::io::{BufRead, Write};
 
 use dango_parser;
 use dango_runtime::{instructions::*, runtime::Runtime, Value};
@@ -19,7 +19,23 @@ static REPL_STRING: &str = "
 fn repl() {
     println!("{}", REPL_STRING);
 
-    todo!("REPL will be implemented after the parser is made");
+    let mut stdin = std::io::stdin().lock();
+
+    let terminate = false;
+
+    while !terminate {
+        let mut source: String = String::new();
+
+        stdin.read_line(&mut source).unwrap();
+
+        let span_tokens = dango_parser::span_tokenizer::tokenize_into_spans(source.as_str());
+        println!("{:?}", span_tokens);
+
+        let tokens = dango_parser::tokenizer::tokenize(span_tokens);
+        println!("{:?}", tokens);
+
+        source.clear();
+    }
 }
 
 fn main() {
@@ -41,9 +57,8 @@ fn main() {
         std::process::exit(1);
     };
 
-    let span_tokens = dango_parser::tokenizer::tokenize(source.as_str());
-    
-    println!("{:?}", span_tokens);
+    let span_tokens = dango_parser::span_tokenizer::tokenize_into_spans(source.as_str());
+    let tokens = dango_parser::tokenizer::tokenize(span_tokens);
 
     let mut runtime = Runtime::new();
 

@@ -1,6 +1,7 @@
 
 use std::io::Write;
 
+use dango_parser;
 use dango_runtime::{instructions::*, runtime::Runtime, Value};
 
 static REPL_STRING: &str = "
@@ -40,6 +41,10 @@ fn main() {
         std::process::exit(1);
     };
 
+    let span_tokens = dango_parser::tokenizer::tokenize(source.as_str());
+    
+    println!("{:?}", span_tokens);
+
     let mut runtime = Runtime::new();
 
     dango_runtime::stdlib::load_io(&mut runtime);
@@ -48,11 +53,11 @@ fn main() {
     let mut program = Program::new();
 
     // eat (2.0)(:math-sqrt)----
-    program.add_line(vec![
-        Instruction::Dumpling(Dumpling::Float(2.0)),
-        Instruction::Dumpling(Dumpling::FnCall("math-sqrt".to_string())),
-        Instruction::Other(Operation::Eat(Eat::StackTop)),
-    ]);
+    // program.add_line(vec![
+    //     Instruction::Dumpling(Dumpling::Float(2.0)),
+    //     Instruction::Dumpling(Dumpling::FnCall("math-sqrt".to_string())),
+    //     Instruction::Other(Operation::Eat(Eat::StackTop)),
+    // ]);
 
-    runtime.run(program);
+    // runtime.run(program);
 }

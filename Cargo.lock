@@ -6,8 +6,13 @@ version = 4
 name = "dango-esolang"
 version = "0.1.0"
 dependencies = [
+ "dango_parser",
  "dango_runtime",
 ]
+
+[[package]]
+name = "dango_parser"
+version = "0.1.0"
 
 [[package]]
 name = "dango_runtime"

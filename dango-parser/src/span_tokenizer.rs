@@ -6,6 +6,7 @@ use std::str::Chars;
 #[derive(Debug, PartialEq)]
 pub enum SpanKind {
     Dumpling,               // (Hello, world!)
+    Newline,
     NonDumpling,            // eat
     Stick,                  // ----
     Eof,
@@ -60,6 +61,10 @@ impl<'a> SpanTokenizer<'a> {
 
         match self.first() {
             Some(c) => match c {
+                '\n' => {
+                    self.advance();
+                    SpanToken::new(SpanKind::Newline, "")
+                },
                 '(' => self.consume_dumpling(),
                 '-' => self.consume_stick(),
                 _ => self.consume_misc(),
@@ -114,8 +119,10 @@ impl<'a> SpanTokenizer<'a> {
     }
 
     fn skip_whitespace(&mut self) {
+
         while let Some(c) = self.first() {
-            if !c.is_whitespace() { break; }
+            if c == '\n' || !c.is_whitespace() { break; }
+
             self.advance();
         }
     }

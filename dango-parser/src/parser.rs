@@ -40,7 +40,7 @@ pub fn parse(tokens: Vec<Token>) -> Program {
 
     for token in tokens {
         match token {
-            Token::Eat => line.push(Instruction::Other(Operation::Eat(Eat::StackTop))),
+            Token::Eat => line.push(Instruction::Other(Operation::Eat)),
             Token::Float(val) => line.push(Instruction::Dumpling(Dumpling::Float(val))),
             Token::FunctionCall(name) => line.push(Instruction::Dumpling(Dumpling::FnCall(name))),
             Token::Int(val) => line.push(Instruction::Dumpling(Dumpling::Int(val))),
@@ -48,13 +48,16 @@ pub fn parse(tokens: Vec<Token>) -> Program {
             Token::Stringify => line.push(Instruction::Dumpling(Dumpling::Stringify)),
 
             Token::Stick => (), // These tokens were only for syntax and should be ignored during code generation
+
+            // Couldn't split a list by predicate so I decided to do this
+            Token::Newline | Token::Eof => {
+                line.reverse();
+                prog.add_line(line.clone());
+                line.clear();
+            },
             _ => todo!(),
         }
     }
-
-    line.reverse(); // Funny thing about Dango is that the semantics favor right-to-left, but parsing is easier left-to-right.
-
-    prog.add_line(line);
 
     prog
 }

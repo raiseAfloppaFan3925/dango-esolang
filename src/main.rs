@@ -68,8 +68,10 @@ fn main() {
 
     let mut runtime = Runtime::new();
 
+    let program = dango_parser::parser::parse(tokens);
+
     dango_runtime::stdlib::load_io(&mut runtime);
     dango_runtime::stdlib::load_math(&mut runtime);
 
-    runtime.run(dango_parser::parser::parse(tokens));
+    runtime.run(program);
 }

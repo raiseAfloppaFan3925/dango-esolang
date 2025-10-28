@@ -18,6 +18,8 @@ pub enum Token {
     Eat,                        // eat
 
     // More misc
+    Eof,
+    Newline,
     Stick,                      // ----
 }
 
@@ -27,9 +29,13 @@ pub fn tokenize(span_tokens: Vec<SpanToken<'_>>) -> Vec<Token> {
         index: 0,
     };
 
-    std::iter::from_fn(|| {
+    let mut toks: Vec<Token> = std::iter::from_fn(|| {
         tokenizer.tokenize_span()
-    }).collect()
+    }).collect();
+
+    toks.push(Token::Eof);
+
+    toks
 }
 
 pub struct Tokenizer<'a> {
@@ -43,6 +49,7 @@ impl<'a> Tokenizer<'a> {
             Some(span) => match span.kind {
                 SpanKind::Dumpling => Some(self.tokenize_dumpling()),
                 SpanKind::NonDumpling => Some(self.tokenize_operation()),
+                SpanKind::Newline => Some(Token::Newline),
                 SpanKind::Stick => Some(Token::Stick),
                 SpanKind::Eof => None,
                 _ => todo!(),

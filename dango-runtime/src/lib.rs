@@ -6,7 +6,7 @@ pub mod stdlib;
 
 use std::collections::HashMap;
 
-use instructions::{Dumpling, Eat, Instruction, Operation, Program};
+use instructions::{Dumpling, Instruction, Operation, Program};
 use runtime::Runtime;
 
 type NativeFn = fn(&mut Vec<Value>) -> Value;
@@ -44,10 +44,10 @@ impl Runtime {
         self.index = 0;
 
         while self.line < self.program.lines() {
-            let line = self.program.get_line_mut(self.line);
+            let prog_line = self.program.get_line(self.line);
 
-            while self.index < line.len() {
-                match &line[self.index] {
+            while self.index < prog_line.len() {
+                match &prog_line[self.index] {
                     Instruction::Dumpling(dumpling) => runtime_interpret_dumpling(dumpling, &mut self.line, &mut self.index, &mut self.stack, &mut self.natives),
                     Instruction::Other(operation) => runtime_interpret_other(operation, &mut self.line, &mut self.index, &mut self.stack, &mut self.natives),
                     _ => panic!("HOW?"),
@@ -55,6 +55,7 @@ impl Runtime {
             }
 
             self.line += 1;
+            self.index = 0; // silly me forgot this
         }
 
         Value::Nil
@@ -110,10 +111,7 @@ pub(crate) fn runtime_interpret_dumpling(dumpling: &Dumpling, line: &mut usize, 
 
 pub(crate) fn runtime_interpret_other(operation: &Operation, line: &mut usize, index: &mut usize, stack: &mut Vec<Value>, natives: &mut HashMap<String, NativeFn>) {
     match operation {
-        Operation::Eat(op) => print!("{}", match op {
-            Eat::StackTop => stack.pop().unwrap(),
-            _ => todo!(),
-        }),
+        Operation::Eat => print!("{}", stack.pop().unwrap()),
         _ => todo!(),
     }
     *index += 1;

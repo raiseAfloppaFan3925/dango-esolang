@@ -5,7 +5,7 @@
 /// (Hello, world!)(')----
 /// eat
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Dumpling {
     Float(f64),                   // (0.401)
     FnCall(String),               // (:get-args)
@@ -18,18 +18,12 @@ pub enum Dumpling {
     StringifyRawUtf32(i64),       // (N)('b)
 }
 
-#[derive(Debug)]
-pub enum Eat {
-    Index(usize),                 // eat 39
-    StackTop,                     // eat
-}
-
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Operation {
-    Eat(Eat),
+    Eat,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Instruction {
     Dumpling(Dumpling),
     Other(Operation),
@@ -56,7 +50,7 @@ impl Program {
     }
 
     pub fn add_line(&mut self, line: Vec<Instruction>) {
-        self.code.push(line)
+        self.code.push(line);
     }
 
     pub fn lines(&self) -> usize {

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="512"
+   height="256"
+   viewBox="0 0 135.46667 67.733333"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="dango-lang-logo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="259.50819"
+     inkscape:cy="124.98112"
+     inkscape:window-width="1920"
+     inkscape:window-height="974"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <linearGradient
+       id="swatch6"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#0f0000;stop-opacity:1;"
+         offset="0"
+         id="stop6" />
+    </linearGradient>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect4"
+       style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 17.388834,9.5517698 a 8.4666662,8.4666662 0 0 0 -4.581116,1.7637162 l -1.313615,-1.313615 c -0.414588,-0.4145882 -1.081961,-0.4145872 -1.4965491,1e-6 -0.414588,0.414588 -0.4145882,1.081961 -2e-7,1.496549 l 1.3136153,1.313615 a 8.4666662,8.4666662 0 0 0 0.694531,11.171928 8.4666662,8.4666662 0 0 0 11.171928,0.694531 l 0.10697,0.10697 a 8.4666662,8.4666662 0 0 0 0.695048,11.171928 8.4666662,8.4666662 0 0 0 11.171928,0.695049 l 0.10697,0.106969 a 8.4666662,8.4666662 0 0 0 0.694531,11.171928 8.4666662,8.4666662 0 0 0 11.171928,0.694532 l 9.270751,9.27075 c 0.414591,0.414591 1.081961,0.414588 1.496549,0 0.414588,-0.414588 0.414591,-1.081958 0,-1.496549 l -9.266099,-9.2661 A 8.4666662,8.4666662 0 0 0 47.927022,35.957393 8.4666662,8.4666662 0 0 0 36.755093,35.262862 L 36.652774,35.160543 A 8.4666662,8.4666662 0 0 0 35.953075,23.983964 8.4666662,8.4666662 0 0 0 24.781147,23.288916 L 24.678828,23.186597 A 8.4666662,8.4666662 0 0 0 23.979646,12.010018 8.4666662,8.4666662 0 0 0 17.388834,9.5517698 Z" />
+    <rect
+       style="fill:#ae7827;fill-opacity:1;stroke:none;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="rect2"
+       width="2.1166666"
+       height="67.73333"
+       x="-1.0613828"
+       y="14.141767"
+       rx="2.1166666"
+       ry="1.0583333"
+       transform="rotate(-45)" />
+    <circle
+       style="fill:#ff91d4;fill-opacity:1;stroke:none;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="path1"
+       cx="-0.0030531317"
+       cy="25.448576"
+       r="8.4666662"
+       transform="rotate(-45)" />
+    <circle
+       style="fill:#f1e773;fill-opacity:1;stroke:none;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="circle1"
+       cx="-0.0030531317"
+       cy="42.381905"
+       r="8.4666662"
+       transform="rotate(-45)" />
+    <circle
+       style="fill:#73ea7c;fill-opacity:1;stroke:none;stroke-width:1.05833;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none"
+       id="circle2"
+       cx="-0.0030531317"
+       cy="59.315239"
+       r="8.4666662"
+       transform="rotate(-45)" />
+    <g
+       id="g6"
+       transform="matrix(1.5804184,0,0,1.6173774,40.147603,-21.042074)"
+       style="stroke-width:0.625473">
+      <text
+         xml:space="preserve"
+         style="font-size:14.0178px;line-height:1;font-family:'Lucida Console';-inkscape-font-specification:'Lucida Console';fill:#ff91d4;fill-opacity:1;stroke:#ffffff;stroke-width:0.661956;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+         x="13.188592"
+         y="36.902702"
+         id="text2"><tspan
+           sodipodi:role="line"
+           id="tspan2"
+           style="fill:#ff91d4;fill-opacity:1;stroke:#ffffff;stroke-width:0.661956;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+           x="13.188592"
+           y="36.902702">Da   </tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.0178px;line-height:1;font-family:'Lucida Console';-inkscape-font-specification:'Lucida Console';fill:#f1e773;fill-opacity:1;stroke:#ffffff;stroke-width:0.661956;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+         x="13.188592"
+         y="36.902702"
+         id="text3"><tspan
+           sodipodi:role="line"
+           id="tspan3"
+           style="fill:#f1e773;fill-opacity:1;stroke:#ffffff;stroke-width:0.661956;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+           x="13.188592"
+           y="36.902702">  ng</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:14.0178px;line-height:1;font-family:'Lucida Console';-inkscape-font-specification:'Lucida Console';fill:#73ea7c;fill-opacity:1;stroke:#ffffff;stroke-width:0.661956;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+         x="13.188592"
+         y="36.902702"
+         id="text4"><tspan
+           sodipodi:role="line"
+           id="tspan4"
+           style="fill:#73ea7c;fill-opacity:1;stroke:#ffffff;stroke-width:0.661956;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill"
+           x="13.188592"
+           y="36.902702">    o</tspan></text>
+    </g>
+  </g>
+</svg>

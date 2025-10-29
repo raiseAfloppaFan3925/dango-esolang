@@ -12,7 +12,6 @@ pub enum Token {
     Null,                       // ()
     RawText(String),            // (Hello, world!)
     Stringify,                  // (')
-    StringifyRawUtf32,          // ('b)
 
     // Misc
     Eat,                        // eat
@@ -87,7 +86,6 @@ impl<'a> Tokenizer<'a> {
         }
 
         match current.text {
-            "" => return Token::Null,
             "j" => return Token::Jump,
             "'" => return Token::Stringify,
             _ => (),

@@ -1,12 +1,12 @@
 
 <div align="center">
-<h1>🍡Dango</h1>
+<img src="https://raw.githubusercontent.com/raiseAfloppaFan3925/dango/master/assets/dango-lang-logo.svg">
 
 <p>Powering applications with <a href="https://en.wikipedia.org/wiki/Dango">delicious dumplings held together by a skewer</a>.</p>
 </div>
 
 ```
-eat (Hello, world!)(')----
+eat (')(Hello, world!)----
 ```
 
 ## Why Dango?

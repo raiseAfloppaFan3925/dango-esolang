@@ -8,8 +8,8 @@ fn validate_tokens(tokens: &Vec<Token>) -> bool {
     for token in tokens {
         match token {
             Token::Float(_) | Token::FunctionCall(_) | Token::Int(_) |
-                Token::Jump | Token::Null | Token::RawText(_) | Token::Stringify |
-                Token::StringifyRawUtf32 => last_is_dumpling = true,
+                Token::Jump | Token::Null | Token::RawText(_) |
+                Token::Stringify => last_is_dumpling = true,
             Token::Stick => {
                 if last_is_dumpling {
                     last_is_dumpling = false;
@@ -17,12 +17,16 @@ fn validate_tokens(tokens: &Vec<Token>) -> bool {
                     panic!("Sticks must hold dango");
                 }
             },
+            Token::Newline => if last_is_dumpling {
+                panic!("Dumplings must be held together by sticks");
+            },
+            Token::Eof => break,
             _ => last_is_dumpling = false,
         }
     }
 
     if last_is_dumpling {
-        panic!("Dumplings must be held together by sticks")
+        panic!("Dumplings must be held together by sticks");
     }
 
     true
@@ -44,6 +48,7 @@ pub fn parse(tokens: Vec<Token>) -> Program {
             Token::Float(val) => line.push(Instruction::Dumpling(Dumpling::Float(val))),
             Token::FunctionCall(name) => line.push(Instruction::Dumpling(Dumpling::FnCall(name))),
             Token::Int(val) => line.push(Instruction::Dumpling(Dumpling::Int(val))),
+            Token::Jump => line.push(Instruction::Dumpling(Dumpling::Jump)),
             Token::RawText(raw_text) => line.push(Instruction::Dumpling(Dumpling::Text(raw_text))),
             Token::Stringify => line.push(Instruction::Dumpling(Dumpling::Stringify)),
 

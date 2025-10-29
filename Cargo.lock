@@ -8,6 +8,7 @@ version = "0.1.0"
 dependencies = [
  "dango_parser",
  "dango_runtime",
+ "dango_utils",
 ]
 
 [[package]]
@@ -20,3 +21,11 @@ dependencies = [
 [[package]]
 name = "dango_runtime"
 version = "0.1.0"
+
+[[package]]
+name = "dango_utils"
+version = "0.1.0"
+dependencies = [
+ "dango_parser",
+ "dango_runtime",
+]

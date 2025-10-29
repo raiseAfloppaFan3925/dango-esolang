@@ -3,6 +3,11 @@ name = "dango-esolang"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "dango"
+path = "src/main.rs"
+
 [dependencies]
 dango_parser = { path = "dango-parser" }
 dango_runtime = { path = "dango-runtime" }
+dango_utils = { path = "dango-utils" }

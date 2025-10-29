@@ -1,6 +1,6 @@
 
 <div align="center">
-<img src="https://raw.githubusercontent.com/raiseAfloppaFan3925/dango/master/assets/dango-lang-logo.svg">
+<img src="https://raw.githubusercontent.com/raiseAfloppaFan3925/dango-esolang/master/assets/dango-lang-logo.svg">
 
 <p>Powering applications with <a href="https://en.wikipedia.org/wiki/Dango">delicious dumplings held together by a skewer</a>.</p>
 </div>

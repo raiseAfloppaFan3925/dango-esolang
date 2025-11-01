@@ -1,9 +1,10 @@
 [package]
-name = "dango_utils"
-version = "0.9.0"
+name = "dango_core"
+version = "0.10.0"
 edition = "2024"
 
 [dependencies]
 dango_errors = { path = "../dango-errors" }
 dango_parser = { path = "../dango-parser" }
 dango_runtime = { path = "../dango-runtime" }
+dango_utils = { path = "../dango-utils" }

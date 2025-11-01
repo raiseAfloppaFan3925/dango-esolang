@@ -1,32 +1,30 @@
 
-/// The fundamental unit of code in the dango in Dango
-/// 
-/// ```text
-/// (Hello, world!)(')----
-/// eat
-/// ```
 #[derive(Debug, Clone)]
-pub enum Dumpling {
+pub enum Instruction {
+    Add,                          // (+)
+    CharFromCodePoint,            // ('c)
+    Divide,                       // (/)
+    Equal,                        // (=)
     Float(f64),                   // (0.401)
     FnCall(String),               // (:get-args)
+    Greater,                      // (>)
     Int(i64),                     // (39)
     Jump,                         // (420)(j)
-    Left,                         // (%left)
+    Less,                         // (<)
+    Length,                       // (len)
+    Multiply,                     // (*)
+    Nop,                          // needed for the interpreter to not crash out
+    NotEqual,                     // (!=)
     Null,                         // ()
     Text(String),                 // (Hello, world!)
     Stringify,                    // (')
-    StringifyRawUtf32(i64),       // (N)('b)
-}
+    Subtract,                     // (-)
+    While,
 
-#[derive(Debug, Clone)]
-pub enum Operation {
     Eat,
-}
-
-#[derive(Debug, Clone)]
-pub enum Instruction {
-    Dumpling(Dumpling),
-    Other(Operation),
+    Fetch(usize),
+    Remove,
+    Skewer(u8),
 }
 
 #[derive(Debug)]

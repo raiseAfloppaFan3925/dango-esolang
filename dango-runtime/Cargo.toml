@@ -4,3 +4,7 @@ version = "0.9.0"
 edition = "2024"
 
 [dependencies]
+dango_errors = { path = "../dango-errors" }
+
+[features]
+exclude-stdlib = []

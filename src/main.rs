@@ -1,38 +1,40 @@
+// This project turned from a dream to an annoyance
 
-use std::io::{BufRead, Write};
+use std::io::Write;
 
+use dango_core::*;
 use dango_runtime::runtime::Runtime;
 
-static REPL_STRING: &str = "
+#[cfg(test)]
+mod tests;
+
+static DANGO_VERSION: &str = "0.10.0";
+
+fn repl() -> std::io::Result<()> {
+    let repl_string = format!("
  _|_
-/@@@\\  | Dango 0.1.0
-\\@@@/  |
-/%%%\\  | Documentation: does not exist yet lol
-\\%%%/  | 'exit' to exit
-/***\\  |
-\\***/  | If you see any bugs, please report them at https://github.com/raiseAfloppaFan3925/dango-esolang/issues
-  |    |
+\x1b[0;91m/@@@\\\x1b[0m  | Dango {}
+\x1b[0;91m\\@@@/\x1b[0m  |
+\x1b[0;93m/%%%\\\x1b[0m  | Documentation: https://raiseafloppafan3925.github.io/dango-website (kind of)
+\x1b[0;93m\\%%%/\x1b[0m  | 'exit' to exit
+\x1b[0;92m/***\\\x1b[0m  |
+\x1b[0;92m\\***/\x1b[0m  | If you find any bugs, please report them at https://github.com/raiseAfloppaFan3925/dango-esolang/issues
+  |    | Even though I'm leaving this behind, that doesn't mean Dango is abandoned. Tell me to come back and I might come back.
   |
-";
+", DANGO_VERSION);
 
-fn repl() {
-    println!("{}", REPL_STRING);
+    println!("{}", repl_string);
 
-    let mut stdout = std::io::stdout().lock();
-    let mut stdin = std::io::stdin().lock();
-
-    let terminate = false;
-
-    while !terminate {
+    loop {
         let mut source: String = String::new();
 
-        print!("--(O)(O)(O) > ");
-        let _ = stdout.flush();
+        print!("--\x1b[0;92m(O)\x1b[0;93m(O)\x1b[0;91m(O)\x1b[0m > ");
+        let _ = std::io::stdout().flush();
 
-        stdin.read_line(&mut source).unwrap();
+        std::io::stdin().read_line(&mut source)?; // This is just the CLI for Dango so why make it (the CLI) multi-threaded?
 
         if source.trim() == "exit" {
-            std::process::exit(0);
+            break;
         }
 
         let mut runtime = Runtime::new();
@@ -41,37 +43,39 @@ fn repl() {
         dango_runtime::stdlib::load_math(&mut runtime);
 
         let value = dango_utils::execute_str(&mut runtime, source.as_str());
+
+        // Prevents any `write(stdout)` or `eat` commands from appearing AFTER what's about to be printed below
+        // TODO: Move to a less hacky version that doesn't flush `stdout`
+        std::io::stdout().flush()?;
         
         match value {
             Ok(value) => println!("\n{}", value),
-            Err(err) => {
-                eprintln!("Error: {}", err);
-                std::process::exit(1);
-            }
+            Err(err) => eprintln!("\n{}", err), // Don't exit, this is a REPL
         }
 
         source.clear();
     }
+
+    std::process::exit(0);
 }
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let args = std::env::args().collect::<Vec<String>>();
 
     if args.len() < 2 {
-        repl();
+        repl()?;
+        std::process::exit(0);
     }
 
     let path = args.get(1).unwrap();
 
     let Ok(source) = std::fs::read(path) else {
-        let mut stderr = std::io::stderr().lock();
-        let _ = writeln!(stderr, "Error: Could not read from path {path}");
+        eprintln!("Error: Could not read from path {path}");
         std::process::exit(1);
     };
 
     let Ok(source) = String::from_utf8(source) else {
-        let mut stderr = std::io::stderr().lock();
-        let _ = writeln!(stderr, "Error: file contains invalid Unicode");
+        eprintln!("Error: file contains invalid Unicode");
         std::process::exit(1);
     };
 
@@ -83,7 +87,9 @@ fn main() {
     let value = dango_utils::execute_str(&mut runtime, source.as_str());
 
     if let Err(err) = value {
-        println!("Error: {}", err);
+        println!("\n{}", err);
         std::process::exit(1);
     }
+
+    Ok(())
 }

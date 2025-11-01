@@ -27,19 +27,12 @@ fn dango_io_input(stack: &mut Vec<Value>) -> Result<Value, RuntimeError> {
     use std::io;
     use std::io::BufRead;
 
-    let mode = pop_stack(stack)?;
+    let mode = peek_stack(stack, 0);
     
-    if let Value::Int(mode) = mode {
-        match mode {
-            0 => (),
-            1 => {
-                let prompt = pop_stack(stack)?;
-                print!("{}", prompt);
-            },
-            _ => push_stack(stack, Value::Int(mode)),
-        }
-    } else {
-        push_stack(stack, mode);
+    if let Ok(Value::Int(mode)) = mode && *mode == 1 {
+        pop_stack(stack)?;
+        let prompt = pop_stack(stack)?;
+        print!("{}", prompt);
     }
 
     let mut stdin = io::stdin().lock();
@@ -105,7 +98,7 @@ fn dango_math_acos(stack: &mut Vec<Value>) -> Result<Value, RuntimeError> {
     Ok(Value::Float(match val {
         Value::Int(val) => (val as f64).acos(),
         Value::Float(val) => val.acos(),
-        _ => panic!("dango stdlib `math-acos` error: value {val} is invalid"),
+        _ => return Err(RuntimeError::CustomError(format!("dango stdlib `math-acos` error: value {val} is invalid"))),
     }))
 }
 
@@ -115,7 +108,7 @@ fn dango_math_atan(stack: &mut Vec<Value>) -> Result<Value, RuntimeError> {
     Ok(Value::Float(match val {
         Value::Int(val) => (val as f64).atan(),
         Value::Float(val) => val.atan(),
-        _ => panic!("dango stdlib `math-atan` error: value {val} is invalid"),
+        _ => return Err(RuntimeError::CustomError(format!("dango stdlib `math-atan` error: value {val} is invalid"))),
     }))
 }
 
@@ -125,7 +118,7 @@ fn dango_math_cos(stack: &mut Vec<Value>) -> Result<Value, RuntimeError> {
     Ok(Value::Float(match val {
         Value::Int(val) => (val as f64).cos(),
         Value::Float(val) => val.cos(),
-        _ => panic!("dango stdlib `math-cos` error: value {val} is invalid"),
+        _ => return Err(RuntimeError::CustomError(format!("dango stdlib `math-cos` error: value {val} is invalid"))),
     }))
 }
 
@@ -204,7 +197,7 @@ fn dango_math_sin(stack: &mut Vec<Value>) -> Result<Value, RuntimeError> {
     Ok(Value::Float(match val {
         Value::Int(val) => (val as f64).sin(),
         Value::Float(val) => val.sin(),
-        _ => panic!("dango stdlib `math-sin` error: value {val} is invalid"),
+        _ => return Err(RuntimeError::CustomError(format!("dango stdlib `math-sin` error: value {val} is invalid"))),
     }))
 }
 
@@ -213,7 +206,7 @@ fn dango_math_sqrt(stack: &mut Vec<Value>) -> Result<Value, RuntimeError> {
     Ok(Value::Float(match val {
         Value::Int(val) => (val as f64).sqrt(),
         Value::Float(val) => val.sqrt(),
-        _ => panic!("dango stdlib `math-sqrt` error: value {val} is invalid"),
+        _ => return Err(RuntimeError::CustomError(format!("dango stdlib `math-sqrt` error: value {val} is invalid"))),
     }))
 }
 
@@ -227,19 +220,15 @@ fn dango_math_tan(stack: &mut Vec<Value>) -> Result<Value, RuntimeError> {
     Ok(Value::Float(match val {
         Value::Int(val) => (val as f64).tan(),
         Value::Float(val) => val.tan(),
-        _ => panic!("dango stdlib `math-tan` error: value {val} is invalid"),
+        _ => return Err(RuntimeError::CustomError(format!("dango stdlib `math-tan` error: value {val} is invalid"))),
     }))
 }
 
 fn dango_env_args(_: &mut Vec<Value>) -> Result<Value, RuntimeError> {
-    let args = std::env::args();
-    let args = args.collect::<Vec<String>>();
+    let args = std::env::args()
+        .collect::<Vec<String>>()
+        .iter().map(|arg| Value::String(arg.to_owned()))
+        .collect::<Vec<Value>>();
 
-    let mut dango = vec![];
-
-    for arg in args {
-        dango.push(Value::String(arg));
-    }
-
-    Ok(Value::Dango(dango))
+    Ok(Value::dango_from_vec(args))
 }

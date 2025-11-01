@@ -4,4 +4,5 @@ version = "0.9.0"
 edition = "2024"
 
 [dependencies]
+dango_errors = { path = "../dango-errors" }
 dango_runtime = { path = "../dango-runtime"}

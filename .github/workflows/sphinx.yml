@@ -70,5 +70,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         if: github.ref == 'refs/heads/website'
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/
+          github_token: ${{ secrets.PAT }}
+          publish_dir: _build/ # please work

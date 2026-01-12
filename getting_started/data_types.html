@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="violet" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Data Types - Dango 0.11.0 documentation</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Standard Library" href="stdlib.html" /><link rel="prev" title="Memory System" href="memory.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=ad592e98" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=44020203" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Data Types"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      <img class="light-logo" src="../_static/dango-lang-logo.svg" alt="Dango" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/dango-lang-logo.svg" alt="Dango" height="28" loading="lazy" />
+      <strong>Dango</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials"></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installing Dango</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="syntax.html">Syntax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memory.html">Memory System</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stdlib.html">Standard Library</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../embedding.html">Embedding Dango</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#null-type">Null type</a></li>
+<li><a class="reference internal" href="#integers">Integers</a></li>
+<li><a class="reference internal" href="#floating-point-numbers">Floating-point numbers</a></li>
+<li><a class="reference internal" href="#strings">Strings</a></li>
+<li><a class="reference internal" href="#dango">Dango</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Dango</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Getting Started</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Data Types</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="data-types">
+<h1>Data Types<a class="headerlink" href="#data-types" title="Link to this heading">¶</a></h1>
+<p>Dango has 4 data types: <strong>null</strong>, <strong>int</strong>, <strong>float</strong>, <strong>string</strong>, and <strong>dango</strong>.</p>
+<section id="null-type">
+<h2>Null type<a class="headerlink" href="#null-type" title="Link to this heading">¶</a></h2>
+<p>Dango has a null/void type, <code class="docutils literal notranslate"><span class="pre">()</span></code>. This type has only one value, which is also
+called <code class="docutils literal notranslate"><span class="pre">()</span></code>.</p>
+<p>Some standard library functions and even the “to integer” and “to float”
+operators do return this value on a failed operation, so make sure to always
+check for null like it’s C(++).</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Converting user input (a string) to a real while handling errors.</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="l">(;)</span><span class="x">(:io-input)</span><span class="m">(0)</span><span class="p">----</span>
+</span><span data-line="2"><span class="m">(5)</span><span class="l">(while)(!=)</span><span class="err">()</span><span class="p">----</span><span class="w"> </span><span class="k">fetch 0</span>
+</span><span data-line="3"><span class="k">eat</span><span class="w"> </span><span class="l">(Invalid number!)</span><span class="p">----</span>
+</span><span data-line="4"><span class="k">eat</span><span class="w"> </span><span class="l">(&#39;)</span><span class="m">(10)</span><span class="p">----</span>
+</span><span data-line="5"><span class="o">(j</span><span class="err">)</span><span class="m">(1)</span><span class="p">----</span>
+</span><span data-line="6"><span class="k">remove</span><span class="w"> </span><span class="l">(Do stuff here...)</span><span class="p">----</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+<section id="integers">
+<h2>Integers<a class="headerlink" href="#integers" title="Link to this heading">¶</a></h2>
+<p>Dango uses 64-bit signed integers. This means that the minimum value of an
+integer is <code class="docutils literal notranslate"><span class="pre">-9223372036854775808</span></code> and the maximum value of an integer is
+<code class="docutils literal notranslate"><span class="pre">9223372036854775807</span></code>.</p>
+<p>An integer literal is a dumpling containing an integer. Unfortunately, Dango
+does not have binary, hexadecimal, or octal literals.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">examples of integer literals (sticks removed for clarity)</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="m">(1)</span>
+</span><span data-line="2"><span class="m">(-314159)</span>
+</span><span data-line="3"><span class="m">(39)</span>
+</span><span data-line="4"><span class="m">(2763)</span>
+</span></pre></div>
+</div>
+</div>
+<p>Because they have finite size, they will wrap around if an operation creates a
+value larger than the maximum or smaller than the minimum.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">example of wrapping arithmetic</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">(-)</span><span class="m">(1)(-9223372036854775808)</span><span class="p">----</span><span class="w"> </span><span class="k">remove</span><span class="w"> </span><span class="l">(Subtract 1 from the minimum integer value)</span><span class="p">----</span>
+</span><span data-line="2"><span class="k">eat</span><span class="w"> </span><span class="o">(=)</span><span class="m">(9223372036854775807)</span><span class="p">----</span><span class="w"> </span><span class="k">remove</span><span class="w"> </span><span class="l">(prints 1 [true])</span><span class="p">----</span>
+</span></pre></div>
+</div>
+</div>
+<p>Dango has no boolean types, so operations that would normally return a boolean
+instead return either <code class="docutils literal notranslate"><span class="pre">0</span></code> for false or <code class="docutils literal notranslate"><span class="pre">1</span></code> for true. Logical OR can be
+replicated with addition, logical AND by multiplication, and logical NOT by
+subtracting from one.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">logical AND (substitute <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> with the values you want to use for them)</span><a class="headerlink" href="#id4" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">(*)</span><span class="l">(b)(a)</span><span class="p">----</span><span class="w"> </span><span class="k">remove</span><span class="w"> </span><span class="l">(a * b)</span><span class="p">----</span>
+</span></pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">logical OR (substitute <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> with the values you want to use for them)</span><a class="headerlink" href="#id5" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">(+)</span><span class="l">(b)(a)</span><span class="p">----</span><span class="w"> </span><span class="k">remove</span><span class="w"> </span><span class="l">(a + b)</span><span class="p">----</span>
+</span></pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">logical NOT (substitute <code class="docutils literal notranslate"><span class="pre">x</span></code> with the value you want to use for it)</span><a class="headerlink" href="#id6" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="o">(-)</span><span class="l">(x)</span><span class="m">(1)</span><span class="p">----</span><span class="w"> </span><span class="k">remove</span><span class="w"> </span><span class="l">(1 - x)</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+<section id="floating-point-numbers">
+<h2>Floating-point numbers<a class="headerlink" href="#floating-point-numbers" title="Link to this heading">¶</a></h2>
+<p>Floats in Dango (which will sometimes be referred to as “reals”) are <a class="reference external" href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">64-bit
+IEEE-754 double-precision floating-point numbers</a>,
+which is <code class="docutils literal notranslate"><span class="pre">f64</span></code> in Rust, <code class="docutils literal notranslate"><span class="pre">double</span></code> in C/C++, or <code class="docutils literal notranslate"><span class="pre">float</span></code> in Python.</p>
+<p>Floating-point literals are written in the same way as integer literal, with
+the float in a dumpling.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">examples of float literals (sticks removed for clarity)</span><a class="headerlink" href="#id7" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="m">(1.23456789)</span><span class="p">----</span>
+</span><span data-line="2"><span class="m">(1000000000.0)</span><span class="p">----</span>
+</span><span data-line="3"><span class="m">(0.401)</span><span class="p">----</span>
+</span><span data-line="4"><span class="m">(-0.618)</span><span class="p">----</span>
+</span><span data-line="5"><span class="m">(1.618)</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+<section id="strings">
+<h2>Strings<a class="headerlink" href="#strings" title="Link to this heading">¶</a></h2>
+<p>Strings in Dango have no designated literal syntax unlike floats or integers,
+but are instead created by stringifying a dumpling containing raw text using
+the <code class="docutils literal notranslate"><span class="pre">(')</span></code> operator.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">creating a string from raw text</span><a class="headerlink" href="#id8" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="l">(&#39;)(Hello, world!)</span><span class="p">----</span>
+</span></pre></div>
+</div>
+</div>
+<p>Some characters (such as those reserved for commands, <code class="docutils literal notranslate"><span class="pre">)</span></code>,  and anything
+starting with a colon <code class="docutils literal notranslate"><span class="pre">:</span></code>) cannot be created in string literals. Therefore,
+the <code class="docutils literal notranslate"><span class="pre">('c)</span></code> operator is used. It takes in an integer as input and pushes to
+the stack the character with the Unicode codepoint.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">printing <code class="docutils literal notranslate"><span class="pre">(hello)</span></code></span><a class="headerlink" href="#id9" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="l">(&#39;)((hello)</span><span class="p">----</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+<section id="dango">
+<h2>Dango<a class="headerlink" href="#dango" title="Link to this heading">¶</a></h2>
+<p>Dango (not to be confused with the code or the language itself) are arrays with
+a maximum length of 5.</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">creating a dango</span><a class="headerlink" href="#id10" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="m">(1)(2)(3)</span><span class="p">----</span>
+</span><span data-line="2"><span class="k">skewer 3</span>
+</span></pre></div>
+</div>
+</div>
+<p>Dango can be created using the <code class="docutils literal notranslate"><span class="pre">skewer</span></code> keyword, which like <code class="docutils literal notranslate"><span class="pre">fetch</span></code>, takes
+a raw number as input. When it is executed, it pops the top N values of the
+stack and puts them into a dango structure.</p>
+<p>The only way to retrieve the elements of a dango is to pop them from it using
+the <code class="docutils literal notranslate"><span class="pre">remove</span></code> command. Instead of just removing the dango, it removes the
+head element of the dango and pushes it to the stack.</p>
+<p>Dango can somehow contain other dango.</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">dango nesting???</span><a class="headerlink" href="#id11" title="Link to this code">¶</a></div>
+<div class="highlight-dango notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">eat</span><span class="w"> </span><span class="err">skewer</span><span class="w"> </span><span class="m">(1)</span><span class="p">----</span><span class="w"> </span><span class="k">skewer 2</span><span class="w"> </span><span class="m">(2)(3)</span><span class="p">----</span><span class="w"> </span><span class="k">skewer 2</span><span class="w"> </span><span class="m">(4)(5)</span><span class="p">----</span>
+</span></pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Output</span><a class="headerlink" href="#id12" title="Link to this code">¶</a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">(1)[(2)(3)][(4)(5)]----
+</span></pre></div>
+</div>
+</div>
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="memory.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Memory System</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="stdlib.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Standard Library</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, raiseAfloppaFan3925</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials"></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=f3b36f1a"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/shibuya.js?v=cac61aee"></script></body>
+</html>

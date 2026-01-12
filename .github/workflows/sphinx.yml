@@ -25,7 +25,7 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - main
+      - website
   pull_request:
 
 jobs:

@@ -6,7 +6,7 @@
 
 <p>Powering applications with <a href="https://en.wikipedia.org/wiki/Dango">delicious dumplings held together by a skewer</a>.</p>
 
-GitHub (you are here) | [Website](https://raiseafloppafan3925.github.io/dango-website/) | [Esolang Page](https://esolangs.org/wiki/Dango)
+GitHub (you are here) | [Website](https://raiseafloppafan3925.github.io/dango/) | [Esolang Page](https://esolangs.org/wiki/Dango)
 </div>
 
 ```

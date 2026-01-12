@@ -15,10 +15,10 @@ fn repl() -> std::io::Result<()> {
    _|_
   \x1b[0;91m/@@@\\\x1b[0m  | Dango {}
   \x1b[0;91m\\@@@/\x1b[0m  |
-  \x1b[0;93m/%%%\\\x1b[0m  | Documentation: https://raiseafloppafan3925.github.io/dango-website (kind of)
+  \x1b[0;93m/%%%\\\x1b[0m  | Documentation: https://raiseafloppafan3925.github.io/dango
   \x1b[0;93m\\%%%/\x1b[0m  | 'exit' to exit
   \x1b[0;92m/***\\\x1b[0m  |
-  \x1b[0;92m\\***/\x1b[0m  | If you find any bugs, please report them at https://github.com/raiseAfloppaFan3925/dango-esolang/issues
+  \x1b[0;92m\\***/\x1b[0m  | If you find any bugs, please report them at https://github.com/raiseAfloppaFan3925/dango/issues
     |    | We're back better than ever!
     |
 ", DANGO_VERSION);

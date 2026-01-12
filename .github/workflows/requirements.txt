@@ -1,3 +1,0 @@
-# lol I forgot that it was a relative path
-sphinx==8.2.3
-shibuya==2025.5.30

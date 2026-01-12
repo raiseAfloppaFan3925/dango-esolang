@@ -54,6 +54,18 @@ impl CompileError {
     }
 }
 
+impl std::fmt::Debug for CompileErrorKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self, f)
+    }
+}
+
+impl std::fmt::Debug for CompileError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self, f)
+    }
+}
+
 #[allow(unreachable_patterns)]
 impl std::fmt::Display for CompileErrorKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -87,6 +99,7 @@ pub enum RuntimeError {
     NonexistentFunction(String),
     NotACodePoint(Option<i64>),
     StackUnderflow,
+    ZeroLengthDango,
 }
 
 impl std::fmt::Display for RuntimeError {
@@ -101,6 +114,7 @@ impl std::fmt::Display for RuntimeError {
                 write!(f, "error: value is not a code point")
             }
             Self::StackUnderflow => write!(f, "error: the stack cannot be popped from when it is already empty"),
+            Self::ZeroLengthDango => write!(f, "error: somehow, you have snuck a stick in here, but they don't taste good"),
         }
     }
 }

@@ -8,19 +8,19 @@ use dango_runtime::runtime::Runtime;
 #[cfg(test)]
 mod tests;
 
-static DANGO_VERSION: &str = "0.10.0";
+static DANGO_VERSION: &str = "0.11.0";
 
 fn repl() -> std::io::Result<()> {
     let repl_string = format!("
- _|_
-\x1b[0;91m/@@@\\\x1b[0m  | Dango {}
-\x1b[0;91m\\@@@/\x1b[0m  |
-\x1b[0;93m/%%%\\\x1b[0m  | Documentation: https://raiseafloppafan3925.github.io/dango-website (kind of)
-\x1b[0;93m\\%%%/\x1b[0m  | 'exit' to exit
-\x1b[0;92m/***\\\x1b[0m  |
-\x1b[0;92m\\***/\x1b[0m  | If you find any bugs, please report them at https://github.com/raiseAfloppaFan3925/dango-esolang/issues
-  |    | Even though I'm leaving this behind, that doesn't mean Dango is abandoned. Tell me to come back and I might come back.
-  |
+   _|_
+  \x1b[0;91m/@@@\\\x1b[0m  | Dango {}
+  \x1b[0;91m\\@@@/\x1b[0m  |
+  \x1b[0;93m/%%%\\\x1b[0m  | Documentation: https://raiseafloppafan3925.github.io/dango-website (kind of)
+  \x1b[0;93m\\%%%/\x1b[0m  | 'exit' to exit
+  \x1b[0;92m/***\\\x1b[0m  |
+  \x1b[0;92m\\***/\x1b[0m  | If you find any bugs, please report them at https://github.com/raiseAfloppaFan3925/dango-esolang/issues
+    |    | We're back better than ever!
+    |
 ", DANGO_VERSION);
 
     println!("{}", repl_string);
@@ -40,12 +40,13 @@ fn repl() -> std::io::Result<()> {
         let mut runtime = Runtime::new();
 
         dango_runtime::stdlib::load_io(&mut runtime);
+        dango_runtime::stdlib::load_chrono(&mut runtime);
         dango_runtime::stdlib::load_math(&mut runtime);
 
         let value = dango_utils::execute_str(&mut runtime, source.as_str());
 
         // Prevents any `write(stdout)` or `eat` commands from appearing AFTER what's about to be printed below
-        // TODO: Move to a less hacky version that doesn't flush `stdout`
+        // Doesn't matter, this is a REPL
         std::io::stdout().flush()?;
         
         match value {
@@ -83,6 +84,7 @@ fn main() -> std::io::Result<()> {
 
     dango_runtime::stdlib::load_io(&mut runtime);
     dango_runtime::stdlib::load_math(&mut runtime);
+    dango_runtime::stdlib::load_chrono(&mut runtime);
 
     let value = dango_utils::execute_str(&mut runtime, source.as_str());
 

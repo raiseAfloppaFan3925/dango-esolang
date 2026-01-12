@@ -14,13 +14,14 @@ fn validate_tokens(tokens: &Vec<Token>) -> Option<Vec<CompileError>> {
             TokenKind::Add | TokenKind::CharCodePoint | TokenKind::Divide | TokenKind::Equal | TokenKind::Float(_) |
                 TokenKind::FunctionCall(_) | TokenKind::Greater | TokenKind::Int(_) | TokenKind::Jump | TokenKind::Length |
                 TokenKind::Less | TokenKind::Multiply | TokenKind::NotEqual | TokenKind::Null | TokenKind::RawText(_) |
-                TokenKind::Stringify | TokenKind::Subtract | TokenKind::While
+                TokenKind::Stringify | TokenKind::Subtract | TokenKind::ToFloat | TokenKind::ToInt | TokenKind::While
                 => {
                     last_is_dumpling = true;
                     last_dumpling_position = (token.line, token.column);
                 },
             TokenKind::Stick => if !last_is_dumpling {
                 errors.push(CompileError::new(CompileErrorKind::OrphanedStick, token.line, token.column));
+                last_is_dumpling = false;
             } else {
                 last_is_dumpling = false;
             },
@@ -79,6 +80,8 @@ pub fn parse(tokens: Vec<Token>) -> Result<Program, Vec<CompileError>> {
             TokenKind::Skewer(count) => line.push(Instruction::Skewer(count)),
             TokenKind::Stringify => line.push(Instruction::Stringify),
             TokenKind::Subtract => line.push(Instruction::Subtract),
+            TokenKind::ToFloat => line.push(Instruction::ToFloat),
+            TokenKind::ToInt => line.push(Instruction::ToInt),
             TokenKind::While => line.push(Instruction::While),
 
             // These tokens were only for syntax and should be ignored during code generation

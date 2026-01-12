@@ -1,0 +1,11 @@
+fetch 0 fetch 0 (:io-input)(1)(+)(')( )(+)('c)(58)(+)('c)(41)(')(Sleep for (seconds)----
+(j)(12)(while)(=)(')(exit)----
+(j)(1)---- eat eat eat eat eat eat (')('exit' to exit)('c)(10)(')('help' to show this)('c)(10)(')(this program takes in a number as input and sleeps for that amount of time)('c)(10)---- (while)(=)(')(help)----
+(j)(1)---- remove remove eat eat (')(Invalid duration. Try again.)('c)(10)---- (while)(+)(<)(0)---- fetch 1 (=)()---- fetch 0 fetch 0 (;)----
+(-)(:chrono-now)---- remove (:chrono-sleep)---- fetch 1 (:chrono-now)----
+(-)---- fetch 1 (0)----
+fetch 0
+(-)---- fetch 3 eat (')( seconds (error of )---- eat fetch 0 eat (')(Slept for )----
+eat eat ('c)(41)('c)(10)---- eat
+remove remove remove remove
+(j)(1)----

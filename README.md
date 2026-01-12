@@ -2,9 +2,11 @@
 <div align="center">
 <img src="https://raw.githubusercontent.com/raiseAfloppaFan3925/dango-esolang/master/assets/dango-lang-logo.svg">
 
+<h1>Dango 0.11.0</h1>
+
 <p>Powering applications with <a href="https://en.wikipedia.org/wiki/Dango">delicious dumplings held together by a skewer</a>.</p>
 
-[Website](https://raiseafloppafan3925.github.io/dango-website/) | [Esolang Page](https://esolangs.org/wiki/Dango)
+GitHub (you are here) | [Website](https://raiseafloppafan3925.github.io/dango-website/) | [Esolang Page](https://esolangs.org/wiki/Dango)
 </div>
 
 ```
@@ -17,13 +19,13 @@ eat (')(Hello, world!)----
 
 * **Performance**: Dango is simple and lightweight yet fast. If you dare, you can even embed Dango into your Rust projects.
 
-* **Extensible**: Dango is easy to extend with native functions. (but you can't have custom objects so skill issue)
+* **Extensible**: Dango is easy to extend with native functions. (but you can't have custom objects and functions aren't first-class so skill issue)
 
 * **Active Development**: Unlike [Mango](https://github.com/raiseAfloppaFan3925/mango) and [Nonstraightforward](https://github.com/raiseAfloppaFan3925/nonstraightforward), Dango is always in development. In case it isn't, then page me on GitHub or on Esolang.
 
 ## Quick Start
 
-Wait until I make a useless wiki on GitHub pages.
+See [the website](https://raiseafloppafan3925.github.io/dango-website/getting_started/index.html).
 
 ## Installing the Source
 
@@ -37,16 +39,25 @@ git clone https://github.com/raiseAfloppaFan3925/dango-esolang.git
 
 * Humble "Hello, world!"
 
-```
-eat (')(Hello, world!)----
-```
+  ```
+  eat (')(Hello, world!)----
+  ```
 
 * Avant-garde cat program
 
-```
-eat (:io-input)----
-```
+  ```
+  eat (:io-input)----
+  ```
 
-> **Note**: raiseAfloppaFan3925 does NOT guarantee the [Turing-completeness](https://en.wikipedia.org/wiki/Turing_completeness) of Dango. It is up to you to test if this language is Turing-complete. If it's not, then feel free to tell me why and I have a 1 in 1.41421 chance of making a Turing-complete version.
+* Formula for the area of a circle (`A = pi * r * r`)
+
+  ```
+  remove (The value below is the radius. Replace it with whatever expression you want.)----
+  (1)----
+
+  (*)(:math-pi)(*)---- fetch 0
+  ```
+
+> **Note**: raiseAfloppaFan3925 does NOT guarantee the [Turing-completeness](https://en.wikipedia.org/wiki/Turing_completeness) of Dango. Although, I do assume that it's somewhere around a [linear-bounded automaton](https://esolangs.org/wiki/LBA).
 
 > **Serious Note**: Dango is an [esolang](https://esolangs.org/wiki/Esoteric_programming_language), so I don't actually expect that you migrate your projects from C/C++/Rust/Python/Ruby/Swift/Scala/JavaScript/TypeScript/Yappacino/Nonstraightforward/WhateverLanguagesYouAreUsing to Dango.

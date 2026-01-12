@@ -24,6 +24,8 @@ pub enum TokenKind {
     RawText(String),            // (Hello, world!)
     Stringify,                  // (')
     Subtract,                   // (-)
+    ToInt,                      // (`)
+    ToFloat,                    // (;)
     While,                      // (while)
 
     // Misc
@@ -75,11 +77,13 @@ pub fn tokenize(span_tokens: Vec<SpanToken<'_>>) -> Result<Vec<Token>, Vec<Compi
         }
     })
         .filter_map(|tok| {
-            if let Ok(tok) = tok {
-                Some(tok)
-            } else {
-                errors.push(unsafe { tok.unwrap_err_unchecked() });
-                None
+            // did you forget that pattern matching exists?
+            match tok {
+                Ok(tok) => Some(tok),
+                Err(err) => {
+                    errors.push(err);
+                    None
+                }
             }
         })
         .collect();
@@ -149,6 +153,8 @@ impl<'a> Tokenizer<'a> {
             "<" => return Ok(Token::new(TokenKind::Less, current.line, current.column)),
             "!=" => return Ok(Token::new(TokenKind::NotEqual, current.line, current.column)),
             "*" => return Ok(Token::new(TokenKind::Multiply, current.line, current.column)),
+            "`" => return Ok(Token::new(TokenKind::ToInt, current.line, current.column)),
+            ";" => return Ok(Token::new(TokenKind::ToFloat, current.line, current.column)),
             "'" => return Ok(Token::new(TokenKind::Stringify, current.line, current.column)),
             "'c" => return Ok(Token::new(TokenKind::CharCodePoint, current.line, current.column)),
             "-" => return Ok(Token::new(TokenKind::Subtract, current.line, current.column)),

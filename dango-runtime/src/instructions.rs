@@ -19,6 +19,8 @@ pub enum Instruction {
     Text(String),                 // (Hello, world!)
     Stringify,                    // (')
     Subtract,                     // (-)
+    ToFloat,                      // (;)
+    ToInt,                        // (`)
     While,
 
     Eat,
@@ -30,6 +32,13 @@ pub enum Instruction {
 #[derive(Debug)]
 pub struct Program {
     code: Vec<Vec<Instruction>>,
+}
+
+impl PartialEq for Program {
+    #[allow(unused)]
+    fn eq(&self, other: &Self) -> bool {
+        false
+    }
 }
 
 impl Program {

@@ -1,19 +1,18 @@
 
-
 pub mod instructions;
 pub mod runtime;
 
 #[cfg(not(feature = "exclude-stdlib"))]
 pub mod stdlib;
 
-use std::{collections::HashMap, io::Write};
+use std::io::Write;
 
 use dango_errors::RuntimeError;
 
 use instructions::{Instruction, Program};
 use runtime::Runtime;
 
-type NativeFn = fn(&mut Vec<Value>) -> Result<Value, RuntimeError>;
+type NativeFn = fn(&mut Runtime) -> Result<Value, RuntimeError>;
 
 #[derive(Debug, Clone)]
 pub enum Value {
@@ -148,19 +147,18 @@ impl Runtime {
     pub fn run(&mut self, program: Program) -> Result<Value, RuntimeError> {
         self.program = program;
         self.line = 0;
-        self.index = 0;
         self.in_while = false;
 
         while self.line < self.program.lines() {
-            // Immediate update, probably slower but who cares
+            self.index = 0;
             while self.index < self.program.get_line(self.line).len() {
-                runtime_interpret(&self.program.get_line(self.line)[self.index], &mut self.line, &mut self.index, &mut self.in_while, &mut self.stack, &mut self.natives)?;
+                // you better optimize this `clone` call.
+                self.run_inst(self.program.get_line(self.line)[self.index].clone())?;
             }
 
             if !self.in_while {
                 self.line += 1;
             }
-            self.index = 0; // silly me forgot this
         }
 
         if self.stack.len() > 0 {
@@ -168,6 +166,258 @@ impl Runtime {
         } else {
             Ok(Value::Nil)
         }
+    }
+    
+    pub fn push(&mut self, value: Value) {
+        self.stack.push(value);
+    }
+
+    pub fn pop(&mut self) -> Result<Value, RuntimeError> {
+        match self.stack.pop() {
+            Some(value) => Ok(value),
+            None => Err(RuntimeError::StackUnderflow),
+        }
+    }
+
+    pub fn peek(&self, depth: usize) -> Result<&Value, RuntimeError> {
+        match self.stack.get(self.stack.len() - depth - 1) {
+            Some(value) => Ok(value),
+            None => Err(RuntimeError::StackUnderflow),
+        }
+    }
+
+    pub fn dump_stack(&self) {
+        println!("---- stack ----");
+        let mut i = 0;
+        for value in &self.stack {
+            println!("{:#06x} {}", i, value);
+            i += 1;
+        }
+        println!("---- stack end ----");
+    }
+
+    fn run_inst(&mut self, instruction: Instruction) -> Result<(), RuntimeError> {
+        self.index += 1;
+        match instruction {
+            Instruction::Add => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                match (a, b) {
+                    (Value::Int(a), Value::Int(b)) => self.stack.push(Value::Int(a.wrapping_add(b))),
+                    (Value::Int(a), Value::Float(b)) => self.stack.push(Value::Float(a as f64 + b)),
+                    (Value::Float(a), Value::Int(b)) => self.stack.push(Value::Float(a + b as f64)),
+                    (Value::Float(a), Value::Float(b)) => self.stack.push(Value::Float(a + b)),
+                    (Value::String(a), Value::String(b)) => self.stack.push(Value::String(a + b.as_str())),
+                    (Value::Dango(a), Value::Dango(b)) => {
+                        if a.len() + b.len() > 5 {
+                            return Err(RuntimeError::CustomError(format!("cannot create new dango as the lengths ({} and {}) combined are too long", a.len(), b.len())));
+                        }
+                        let mut vector = a;
+                        vector.extend(b);
+                        self.stack.push(Value::dango_from_vec(vector));
+                    }
+                    _ => return Err(RuntimeError::IncorrectOperationTypes("addition".to_string())),
+                }
+            }
+            Instruction::CharFromCodePoint => match self.pop()? {
+                Value::Int(codepoint) => match u32::try_from(codepoint) {
+                    Ok(codepoint) => match char::from_u32(codepoint) {
+                        Some(character) => self.stack.push(Value::String(character.to_string())),
+                        None => return Err(RuntimeError::NotACodePoint(Some(codepoint.into()))),
+                    }
+                    Err(_) => return Err(RuntimeError::NotACodePoint(Some(codepoint))),
+                }
+                _ => return Err(RuntimeError::NotACodePoint(None)),
+            }
+            Instruction::Divide => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                match (a, b) {
+                    (Value::Int(a), Value::Int(b)) => {
+                        let val = safe_division_int(a, b);
+                        // I wish Rust provided better syntax for `else` in `if let` where there's only two cases
+                        // well buddy, have you ever heard of "match"?
+                        match val {
+                            Ok(as_int) => self.stack.push(Value::Int(as_int)),
+                            Err(as_float) => self.stack.push(Value::Float(as_float)),
+                        }
+                    }
+                    _ => return Err(RuntimeError::IncorrectOperationTypes("division".to_string())),
+                }
+            }
+            Instruction::Eat => {
+                print!("{}", self.pop()?);
+                // Unlike in the CLI, we do want to lock `stdout` here because someone could be using Dango
+                // in a multi-threaded context.
+                std::io::stdout().lock().flush().unwrap();
+            }
+            Instruction::Equal => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                self.stack.push(Value::Int((a == b).into()));
+            }
+            Instruction::Fetch(depth) => self.stack.push(self.peek(depth)?.clone()),
+            Instruction::Float(val) => self.stack.push(Value::Float(val)),
+            Instruction::FnCall(name) => {
+                let Some(function) = self.natives.get(&name) else {
+                    return Err(RuntimeError::NonexistentFunction(name.to_owned()));
+                };
+
+                let val = function(self)?;
+                self.stack.push(val);
+            }
+            Instruction::Greater => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                self.stack.push(Value::Int((a > b).into()));
+            }
+            Instruction::Int(value) => self.stack.push(Value::Int(value)),
+            Instruction::Jump => {
+                let offset = self.pop()?;
+
+                self.in_while = false;
+
+                match offset {
+                    Value::Int(offset) => {
+                        self.line = offset as usize - 1; // line numbers start at 1 but indices start at 0
+                        self.index = 0;
+                        return Ok(());
+                    }
+                    _ => return Err(RuntimeError::CustomError("cannot jump with a non-integer offset".to_string())),
+                }
+            }
+            // BREAKING CHANGE: `(len)` on an empty stack now throws a stack overflow error instead
+            //                  of returning zero
+            Instruction::Length => match self.peek(0)? {
+                Value::Dango(dango) => self.push(Value::Int(dango.len() as i64)),
+                _ => self.push(Value::Int(0)),
+            }
+            Instruction::Less => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                self.stack.push(Value::Int((a < b).into()));
+            }
+            Instruction::Multiply => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                match (a, b) {
+                    (Value::Int(a), Value::Int(b)) => self.stack.push(Value::Int(a.wrapping_mul(b))),
+                    (Value::Int(a), Value::Float(b)) => self.stack.push(Value::Float(a as f64 * b)),
+                    (Value::Float(a), Value::Int(b)) => self.stack.push(Value::Float(a * b as f64)),
+                    (Value::Float(a), Value::Float(b)) => self.stack.push(Value::Float(a * b)),
+                    (Value::String(a), Value::Int(b)) => match b {
+                        i64::MIN..0 => return Err(RuntimeError::CustomError("cannot copy a string a negative number of times".to_string())),
+                        0 => self.stack.push(Value::String(String::new())),
+                        1 => self.stack.push(Value::String(a)),
+                        _ => {
+                            let mut value = a.clone();
+                            for _ in 1..=b {
+                                value.push_str(a.as_str());
+                            }
+                            self.stack.push(Value::String(value));
+                        }
+                    }
+                    _ => return Err(RuntimeError::IncorrectOperationTypes("multiplication".to_string())),
+                }
+            }
+            Instruction::Nop => {}
+            Instruction::NotEqual => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                self.stack.push(Value::Int((a != b).into()));
+            }
+            Instruction::Null => self.stack.push(Value::Nil),
+            Instruction::Remove => match self.pop()? {
+                Value::Dango(mut dango) => {
+                    
+                    // Zero-length dango CAN exist and even if it's your fault, I don't want
+                    // the program to bring down your program with UB just because you did it.
+                    dango.reverse();
+                    let value = dango.pop().ok_or(RuntimeError::ZeroLengthDango)?;
+                    dango.reverse();
+
+                    if dango.len() > 0 {
+                        self.stack.push(Value::Dango(dango));
+                    }
+                    self.stack.push(value);
+                }
+                _ => (),
+            }
+            Instruction::Skewer(count) => match count {
+                0 => return Err(RuntimeError::CustomError("cannot have dango with zero dumplings, that's just a stick".to_string())),
+                1..=5 => {
+                    let mut values = vec![];
+
+                    for _ in 0..count {
+                        values.push(self.pop()?);
+                    }
+
+                    self.stack.push(Value::Dango(values));
+                }
+                _ => return Err(RuntimeError::CustomError(format!("skewer is too short for {} dumplings", count))),
+            }
+            Instruction::Subtract => {
+                let b = self.pop()?;
+                let a = self.pop()?;
+
+                match (a, b) {
+                    // Numeric types
+                    (Value::Int(a), Value::Int(b)) => self.stack.push(Value::Int(a.wrapping_sub(b))),
+                    (Value::Int(a), Value::Float(b)) => self.stack.push(Value::Float(a as f64 - b)),
+                    (Value::Float(a), Value::Int(b)) => self.stack.push(Value::Float(a - b as f64)),
+                    (Value::Float(a), Value::Float(b)) => self.stack.push(Value::Float(a - b)),
+                    _ => return Err(RuntimeError::IncorrectOperationTypes("subtraction".to_string())),
+                }
+            }
+            Instruction::Stringify => match self.pop()? {
+                Value::RawText(text) => self.stack.push(Value::String(text)),
+                value => self.stack.push(Value::String(value.to_string())),
+            }
+            Instruction::Text(text) => self.stack.push(Value::RawText(text)),
+            Instruction::ToFloat => match self.pop()? {
+                Value::Int(x) => self.push(Value::Float(x as f64)),
+                Value::Float(x) => self.push(Value::Float(x)),
+                Value::String(string) => match string.parse::<f64>() {
+                    Ok(value) => self.push(Value::Float(value)),
+                    Err(_) => self.push(Value::Nil),
+                }
+                _ => self.push(Value::Nil),
+            }
+            Instruction::ToInt => match self.pop()? {
+                Value::Int(x) => self.push(Value::Int(x)),
+                Value::Float(x) => self.push(Value::Int(x as i64)),
+                Value::String(string) => match string.parse::<i64>() {
+                    Ok(value) => self.push(Value::Int(value)),
+                    Err(_) => self.push(Value::Nil),
+                }
+                _ => self.push(Value::Nil),
+            }
+            Instruction::While => {
+                let condition = self.pop()?;
+
+                self.in_while = match condition {
+                    Value::Nil => false,
+                    Value::Int(val) => val != 0,
+                    Value::Float(val) => val != 0.0,
+                    Value::String(string) => string.len() > 0,
+                    Value::Dango(dango) => dango.len() > 0,
+                    _ => false,
+                };
+
+                if !self.in_while {
+                    self.index = 0;
+                    self.line += 1;
+                }
+            }
+        }
+        Ok(())
     }
 }
 
@@ -201,239 +451,7 @@ fn safe_division_int(a: i64, b: i64) -> Result<i64, f64> {
         }
     }
 
-    Ok(a / b)
+    Ok(a.wrapping_div(b))
 }
 
-// Since you won't let me nicely cut it up into methods and I saw someone using
-// an "associated function", I'll just do this instead.
-pub(crate) fn runtime_interpret(instruction: &Instruction, line: &mut usize, index: &mut usize, in_while: &mut bool, stack: &mut Vec<Value>, natives: &mut HashMap<String, NativeFn>) -> Result<(), RuntimeError> {
-    match instruction {
-        Instruction::Add => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            match (a, b) {
-                // Numeric types
-                (Value::Int(a), Value::Int(b)) => push_stack(stack, Value::Int(a.overflowing_add(b).0)),
-                (Value::Int(a), Value::Float(b)) => push_stack(stack, Value::Float(a as f64 + b)),
-                (Value::Float(a), Value::Int(b)) => push_stack(stack, Value::Float(a + b as f64)),
-                (Value::Float(a), Value::Float(b)) => push_stack(stack, Value::Float(a + b)),
-                // String concatenation
-                (Value::String(a), Value::String(b)) => {
-                    let mut tmp = a;
-                    tmp.push_str(b.as_str());
-                    push_stack(stack, Value::String(tmp));
-                }
-                // Dango concatenation
-                (Value::Dango(mut a), Value::Dango(mut b)) => {
-                    if a.len() + b.len() > 5 {
-                        return Err(RuntimeError::CustomError(format!("cannot create new dango as the lengths ({} and {}) combined are too long", a.len(), b.len())));
-                    }
-
-                    a.append(&mut b); // The value has been popped anyway
-
-                    push_stack(stack, Value::Dango(a));
-                }
-                _ => return Err(RuntimeError::IncorrectOperationTypes("addition".to_string())),
-            }
-        }
-        Instruction::CharFromCodePoint => {
-            let value = pop_stack(stack)?;
-
-            if let Value::Int(cp) = value {
-                if cp < 0 {
-                    return Err(RuntimeError::NotACodePoint(Some(cp)));
-                }
-
-                let Some(character) = char::from_u32(cp as u32) else {
-                    return Err(RuntimeError::NotACodePoint(Some(cp)));
-                };
-
-                push_stack(stack, Value::String(String::from(character)));
-            } else {
-                return Err(RuntimeError::NotACodePoint(None));
-            }
-        }
-        Instruction::Divide => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            match (a, b) {
-                // Numeric types
-                (Value::Int(a), Value::Int(b)) => {
-                    let val = safe_division_int(a, b);
-                    if let Ok(as_int) = val {
-                        push_stack(stack, Value::Int(as_int));
-                    } else {
-                        // I wish Rust provided better syntax for `else` in `if let` where there's only two cases
-                        let as_float = unsafe { val.unwrap_err_unchecked() };
-                        push_stack(stack, Value::Float(as_float));
-                    }
-                }
-                (Value::Int(a), Value::Float(b)) => push_stack(stack, Value::Float(a as f64 / b)),
-                (Value::Float(a), Value::Int(b)) => push_stack(stack, Value::Float(a / b as f64)),
-                (Value::Float(a), Value::Float(b)) => push_stack(stack, Value::Float(a / b)),
-                _ => return Err(RuntimeError::IncorrectOperationTypes("division".to_string())),
-            }
-        }
-        Instruction::Equal => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            push_stack(stack, Value::Int((a == b) as i64));
-        }
-        Instruction::Float(val) => stack.push(Value::Float(*val)),
-        Instruction::FnCall(name) => {
-            let Some(function) = natives.get(name) else {
-                return Err(RuntimeError::NonexistentFunction(name.to_owned()));
-            };
-
-            let val = function(stack)?;
-            stack.push(val);
-        }
-        Instruction::Greater => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            push_stack(stack, Value::Int((a > b) as i64));
-        }
-        Instruction::Int(val) => stack.push(Value::Int(*val)),
-        Instruction::Jump => {
-            let amount = pop_stack(stack)?;
-
-            *in_while = false;
-
-            match amount {
-                Value::Int(offset) => {
-                    *line = offset as usize - 1; // line numbers start at 1 but indices start at 0
-                    *index = 0;
-                    return Ok(());
-                }
-                _ => return Err(RuntimeError::CustomError("cannot jump with a non-integer offset".to_string())),
-            }
-        }
-        Instruction::Length => {
-            let Ok(top) = peek_stack(stack, 0) else {
-                push_stack(stack, Value::Int(0));
-                return Ok(());
-            };
-
-            let mut len = 0;
-
-            if let Value::Dango(dango) = top {
-                len = dango.len();
-            }
-            
-            push_stack(stack, Value::Int(len as i64));
-        }
-        Instruction::Less => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            push_stack(stack, Value::Int((a < b) as i64));
-        }
-        Instruction::Multiply => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            match (a, b) {
-                // Numeric types
-                (Value::Int(a), Value::Int(b)) => push_stack(stack, Value::Int(a.overflowing_mul(b).0)),
-                (Value::Int(a), Value::Float(b)) => push_stack(stack, Value::Float(a as f64 * b)),
-                (Value::Float(a), Value::Int(b)) => push_stack(stack, Value::Float(a * b as f64)),
-                (Value::Float(a), Value::Float(b)) => push_stack(stack, Value::Float(a * b)),
-                _ => return Err(RuntimeError::IncorrectOperationTypes("multiplication".to_string())),
-            }
-        }
-        Instruction::Null => push_stack(stack, Value::Nil),
-        Instruction::NotEqual => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            push_stack(stack, Value::Int((a != b) as i64));
-        }
-        Instruction::Stringify => {
-            let top = pop_stack(stack)?;
-            if let Value::RawText(top) = top {
-                stack.push(Value::String(top));
-            } else {
-                stack.push(Value::String(top.to_string())); // work smarter, not harder
-            }
-        }
-        Instruction::Subtract => {
-            let b = pop_stack(stack)?;
-            let a = pop_stack(stack)?;
-
-            match (a, b) {
-                // Numeric types
-                (Value::Int(a), Value::Int(b)) => push_stack(stack, Value::Int(a.overflowing_sub(b).0)),
-                (Value::Int(a), Value::Float(b)) => push_stack(stack, Value::Float(a as f64 - b)),
-                (Value::Float(a), Value::Int(b)) => push_stack(stack, Value::Float(a - b as f64)),
-                (Value::Float(a), Value::Float(b)) => push_stack(stack, Value::Float(a - b)),
-                _ => return Err(RuntimeError::IncorrectOperationTypes("subtraction".to_string())),
-            }
-        }
-        Instruction::Text(text) => stack.push(Value::RawText(text.clone())),
-        Instruction::Eat => print!("{}", pop_stack(stack)?),
-        Instruction::Fetch(depth) => {
-            let depth = *depth;
-
-            let value = peek_stack(stack, depth)?.clone();
-            push_stack(stack, value);
-        }
-        Instruction::Remove => {
-            let top = pop_stack(stack)?;
-
-            if let Value::Dango(mut dango) = top {
-                // Zero-length dango cannot exist, but if you make one then that's YOUR fault, not mine
-                dango.reverse();
-                let value = unsafe { dango.pop().unwrap_unchecked() };
-                dango.reverse();
-
-                if dango.len() > 0 {
-                    push_stack(stack, Value::Dango(dango));
-                }
-                push_stack(stack, value);
-            }
-        }
-        Instruction::Skewer(count) => {
-            let count = *count;
-
-            if count == 0 {
-                return Err(RuntimeError::CustomError("cannot have dango with zero dumplings, that's just a stick".to_string()));
-            }
-
-            let mut values: Vec<Value> = vec![];
-
-            for _ in 0..count {
-                values.push(pop_stack(stack)?);
-            }
-
-            if count > 5 {
-                return Err(RuntimeError::CustomError(format!("skewer is too short for {} dumplings", count)));
-            }
-
-            stack.push(Value::Dango(values));
-        }
-        Instruction::While => {
-            let condition = pop_stack(stack)?;
-
-            *in_while = match condition {
-                Value::Nil => false,
-                Value::Int(val) => val != 0,
-                Value::Float(val) => val != 0.0,
-                Value::String(string) => string.len() > 0,
-                Value::Dango(dango) => dango.len() > 0,
-                _ => false,
-            };
-
-            if !*in_while {
-                *index = 0;
-                *line += 1;
-            }
-        }
-        Instruction::Nop => (),
-    }
-    *index += 1;
-    Ok(())
-}
+// Good riddance, `runtime_interpret`!

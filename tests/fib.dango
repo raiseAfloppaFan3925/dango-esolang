@@ -1,0 +1,10 @@
+(j)(11)(while)(=)(')(exit)---- fetch 0 fetch 0 (:io-input)(1)---- eat (')(Input a number: )----
+(j)(1)---- eat eat eat eat (')('exit' to exit)('c)(10)(')('help' to see this)('c)(10)---- (while)(=)(')(help)----
+(j)(1)---- eat eat (')(Invalid number. Try again.)('c)(10)---- (while)(=)()---- fetch 0 (`)
+(j)(1)---- eat eat (')(Cannot get a negative Fibonacci number. Try again.)('c)(10)(while)(<)(0)---- fetch 0
+(j)(1)---- eat eat (')(Resulting value would be too large. Try again.)('c)(10)(while)(>)(92)---- fetch 0
+(j)(10)(0)(while)(=)(0)---- fetch 0
+(j)(10)(1)(while)(=)(1)---- fetch 0
+(1)(1)(0)---- fetch 0
+(j)(9)(while)(<)---- fetch 4 fetch 0 (+)(1)---- fetch 4 fetch 2 fetch 3 fetch 4 (+)---- fetch 2 fetch 2
+(j)(1)---- eat ('c)(10)---- eat eat eat ('c)(41)(')( = )---- eat eat (')(F()----

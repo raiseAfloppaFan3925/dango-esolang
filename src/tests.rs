@@ -1,6 +1,7 @@
 
 use super::*;
 
+use dango_errors::*;
 use dango_runtime::{Value, runtime::Runtime};
 
 #[test]
@@ -48,11 +49,48 @@ fn test_dango_data_structure() {
 #[test]
 fn test_compile_errors() {
     let result = dango_utils::compile_str("source");
-    assert!(result.is_err());
+    assert_eq!(result, Err(vec![
+        CompileError::new(
+            CompileErrorKind::InvalidToken("source".to_string()),
+            1,
+            1
+        )
+    ]));
 
     let result = dango_utils::compile_str("----");
-    assert!(result.is_err());
+    assert_eq!(result, Err(vec![
+        CompileError::new(
+            CompileErrorKind::OrphanedStick,
+            1,
+            1
+        )
+    ]));
 
-    let result = dango_utils::compile_str("eat ;: Hello\n:; (2)----");
-    assert!(result.is_err());
+    let result = dango_utils::compile_str("eat ;: Hello\n:; ----(2)----");
+    assert_eq!(result, Err(vec![
+        CompileError::new(
+            CompileErrorKind::InvalidToken(";:".to_string()),
+            1,
+            5
+        ),
+        CompileError::new(
+            CompileErrorKind::InvalidToken("Hello".to_string()),
+            1,
+            8
+        ),
+        CompileError::new(
+            CompileErrorKind::InvalidToken(":;".to_string()),
+            2,
+            1
+        ),
+        // CompileError::new(
+        //     CompileErrorKind::OrphanedStick,
+        //     2,
+        //     4
+        // ),
+        //
+        // This is not here because invalid tokens are span tokenizer errors, which stops the
+        // tokens from ever reaching the tokenizer and the parser which validates the tokens,
+        // which includes making sure that all sticks are bound.
+    ]));
 }

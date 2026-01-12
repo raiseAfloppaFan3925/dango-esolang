@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "dango-esolang"
-version = "0.10.0"
+version = "0.11.0"
 dependencies = [
  "dango_core",
 ]
@@ -33,7 +33,7 @@ dependencies = [
 
 [[package]]
 name = "dango_runtime"
-version = "0.9.0"
+version = "0.11.0"
 dependencies = [
  "dango_errors",
 ]

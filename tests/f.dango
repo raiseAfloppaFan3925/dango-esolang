@@ -1,0 +1,52 @@
+(`)(1)---- remove (Our fibonacci number)----
+fetch 0 fetch 0
+remove (Fib[n], iterative fibonacci by the way)----
+    (j)(9)(while)(!=)(0)---- fetch 0 remove (if n == 0 -> 0)----
+    (j)(46)(0)----
+    (j)(9)(while)(!=)(1)---- fetch 0 remove (if n == 1 -> 1)----
+    (j)(46)(1)----
+
+    fetch 0 remove (let n = n)----
+    (0)---- remove (let x = 0)----
+    (1)---- remove (let y = 1)----
+    (1)---- remove (let i = 0)----
+    remove (while i < y)----
+        remove (top i y x n bottom )----
+
+        fetch 2 remove (x)----
+        remove (top x i y x n bottom )----
+
+        fetch 2 remove (y)----
+        remove (top y x i y x n bottom )----
+
+        (+)---- remove (let z = x + y)----
+        remove (top z i y x n bottom )----
+
+        fetch 4 remove (n = n)----
+        remove (top n z i y x n bottom )----
+
+        fetch 3 remove (x = y)----
+        remove (top x n z i y x n bottom )----
+
+        fetch 2 remove (y = z)----
+        remove (top y x n z i y x n bottom )----
+
+        fetch 4
+        (+)(1)---- remove (i = i + 1)----
+        remove (top i y x n z i y x n bottom )----
+
+        fetch 0 remove (get i)----
+        remove (top i i y x n z i y x n bottom )----
+
+        fetch 4 remove (get n)----
+        remove (top n i i y x n z i y x n bottom )----
+
+        (j)(13)(while)(<)----
+    remove (end while)----
+remove (end)----
+eat (')(F()----
+eat
+eat ('c)(41)----
+eat (')( = )----
+eat
+eat ('c)(10)----

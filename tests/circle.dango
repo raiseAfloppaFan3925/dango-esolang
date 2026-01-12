@@ -1,0 +1,14 @@
+eat (')(Input a number: )----
+(:io-input)(0)----
+(j)(15)(while)(=)(')(exit)---- fetch 0
+(;)----
+(j)(1)---- eat eat (')(Invalid number. Try again.)('c)(10)(while)(=)()---- fetch 0
+(j)(1)---- eat eat (')(Cannot have a circle with a negative radius. Try again.)('c)(10)(while)(<)(0)---- fetch 0
+(j)(1)---- eat eat (')(Cannot have a circle with a radius of zero. Try again.)('c)(10)(while)(=)(0)---- fetch 0
+fetch 0
+eat (')(The area of a circle with a radius of )----
+eat
+eat (')( has an area of )----
+eat (*)(:math-pi)(*)---- fetch 0
+eat ('c)(10)----
+(j)(1)----
